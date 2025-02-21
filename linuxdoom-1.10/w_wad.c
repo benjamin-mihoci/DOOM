@@ -63,7 +63,8 @@ int			numlumps;
 
 void**			lumpcache;
 
-
+//strcmpi is the same as strcmp
+//but its not case sensitive
 #define strcmpi	strcasecmp
 
 void strupr (char* s)
