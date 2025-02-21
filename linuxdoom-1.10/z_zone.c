@@ -192,6 +192,10 @@ Z_Malloc
     memblock_t* newblock;
     memblock_t*	base;
 
+    // i think the point of this in chocolate
+    // was to zero out the first 3 bits
+    // to make sure size is divisible by 8
+    // but here it masks only the first 2 bits?
     size = (size + 3) & ~3;
     
     // scan through the block list,
