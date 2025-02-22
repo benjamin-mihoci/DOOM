@@ -77,24 +77,21 @@ OBJS=				\
 		$(O)/info.o				\
 		$(O)/sounds.o
 
-all:	makedir build
+all:	$(O)/linuxdoom
 
 clean:
 	rm -f *.o *~ *.flc
-	rm -f $(O)/*
-	rmdir $(O)
-
-makedir:
-	mkdir -p $(O)
-build:	$(O)/linuxdoom
+	rm -rf linux
 
 $(O)/linuxxdoom:	$(OBJS) $(O)/i_main.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
 	-o $(O)/linuxxdoom $(LIBS)
 
-$(O)/%.o:	%.c
+$(O)/%.o:	%.c | object
 	$(CC) $(CFLAGS) -c $< -o $@
 
+object:
+	mkdir -p $(O)
 #############################################################
 #
 #############################################################
