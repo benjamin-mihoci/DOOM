@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+
 //-----------------------------------------------------------------------------
 //
 // $Id:$
@@ -95,9 +95,9 @@ typedef enum
 // For resize of screen, at start of game.
 // It will not work dynamically, see visplanes.
 //
-#define	BASE_WIDTH		320
+#define	BASE_WIDTH		320 
 
-// It is educational but futile to change this
+//It is educational but futile to change this
 //  scaling e.g. to 2. Drawing of status bar,
 //  menues etc. is tied to the scale implied
 //  by the graphics.
