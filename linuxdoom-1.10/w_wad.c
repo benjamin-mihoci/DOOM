@@ -121,10 +121,6 @@ ExtractFileBase
     }
 }
 
-
-
-
-
 //
 // LUMP BASED ROUTINES.
 //
@@ -178,6 +174,7 @@ void W_AddFile (char *filename)
     }
 
     printf (" adding %s\n",filename);
+    //printf (" START LUMP VALUE IS : %d\n", numlumps);
     startlump = numlumps;
 	
     if (strcmpi (filename+strlen(filename)-3 , "wad" ) )
@@ -217,6 +214,12 @@ void W_AddFile (char *filename)
     // in the stack frame of the caller
     // automatically freed when the function that
     // called alloca returns to its caller
+    // the contents of this however
+    // will get transferred to 
+    // lumpinfo, which is global
+    // but, i still dont get
+    // why wouldnt the table
+    // get loaded into lumpinfo directly?
 	fileinfo = alloca (length);
 
     // lseek repositions the file offset
@@ -229,24 +232,28 @@ void W_AddFile (char *filename)
     // this reads the infotablesofs?
     read (handle, fileinfo, length);
 	
-
+    // was numlumps 0 until this point?!
+    // answer = yes, yes it was
     numlumps += header.numlumps;
     }
 
     // it gets reallocated here, so i should probably
     // figure out the order of operations here
-    // when does it get mallocd?
-    
+    // when does it get mallocd? probably at init
+
     // Fill in lumpinfo
     lumpinfo = realloc (lumpinfo, numlumps*sizeof(lumpinfo_t));
 
     if (!lumpinfo)
 	I_Error ("Couldn't realloc lumpinfo");
 
+
     lump_p = &lumpinfo[startlump];
 	
     storehandle = reloadname ? -1 : handle;
 	
+    // if i understood correctly,
+    // we only read the info table into memory
     for (i=startlump ; i<numlumps ; i++,lump_p++, fileinfo++)
     {
 	lump_p->handle = storehandle;
@@ -258,8 +265,6 @@ void W_AddFile (char *filename)
     if (reloadname)
 	close (handle);
 }
-
-
 
 
 //
