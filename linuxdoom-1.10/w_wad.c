@@ -65,6 +65,7 @@ void**			lumpcache;
 
 //strcmpi is the same as strcmp
 //but its not case sensitive
+//testing git
 #define strcmpi	strcasecmp
 
 void strupr (char* s)
