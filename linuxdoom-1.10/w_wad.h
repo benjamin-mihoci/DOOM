@@ -32,6 +32,12 @@
 //
 // TYPES
 //
+
+// this is how a WAD file begins
+// first four bytes are for IWAD
+// 0x49 0x57 0x41 0x44
+// then 4 bytes for numlumps
+// and 4 bytes for infotableofs
 typedef struct
 {
     // Should be "IWAD" or "PWAD".
@@ -40,6 +46,7 @@ typedef struct
     int			infotableofs;
     
 } wadinfo_t;
+
 
 
 typedef struct

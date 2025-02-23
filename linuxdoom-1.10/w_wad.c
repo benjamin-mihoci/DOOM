@@ -51,8 +51,6 @@ rcsid[] = "$Id: w_wad.c,v 1.5 1997/02/03 16:47:57 b1 Exp $";
 
 
 
-
-
 //
 // GLOBALS
 //
@@ -73,6 +71,13 @@ void strupr (char* s)
     // loop until \0
     while (*s) { *s = toupper(*s); s++; }
 }
+
+
+// chocolate-doom uses lseek
+// in GetFileLength(int handle)
+// do check that out, whats the difference?
+// i have a feeling that lseek should be faster?
+
 
 int filelength (int handle) 
 { 
@@ -162,7 +167,10 @@ void W_AddFile (char *filename)
 	reloadname = filename;
 	reloadlump = numlumps;
     }
-		
+
+    // The return value of open() is a file descriptor, a small,
+    // nonnegative integer that is an index to an entry in the process's
+    // table of open file descriptors.
     if ( (handle = open (filename,O_RDONLY | O_BINARY)) == -1)
     {
 	printf (" couldn't open %s\n",filename);
@@ -185,6 +193,7 @@ void W_AddFile (char *filename)
     {
 	// WAD file
 	read (handle, &header, sizeof(header));
+   
 	if (strncmp(header.identification,"IWAD",4))
 	{
 	    // Homebrew levels?
@@ -198,13 +207,35 @@ void W_AddFile (char *filename)
 	}
 	header.numlumps = LONG(header.numlumps);
 	header.infotableofs = LONG(header.infotableofs);
-	length = header.numlumps*sizeof(filelump_t);
+	
+
+    // is this the number of bytes after
+    // infotableofs?
+    length = header.numlumps*sizeof(filelump_t);
+
+    // alloca allocates x bytes of space
+    // in the stack frame of the caller
+    // automatically freed when the function that
+    // called alloca returns to its caller
 	fileinfo = alloca (length);
+
+    // lseek repositions the file offset
+    // to the second argument
+    // acording to the third which can be:
+    // SEEK_SET : offset set to second argument
+
 	lseek (handle, header.infotableofs, SEEK_SET);
-	read (handle, fileinfo, length);
-	numlumps += header.numlumps;
+	
+    // this reads the infotablesofs?
+    read (handle, fileinfo, length);
+	
+
+    numlumps += header.numlumps;
     }
 
+    // it gets reallocated here, so i should probably
+    // figure out the order of operations here
+    // when does it get mallocd?
     
     // Fill in lumpinfo
     lumpinfo = realloc (lumpinfo, numlumps*sizeof(lumpinfo_t));
