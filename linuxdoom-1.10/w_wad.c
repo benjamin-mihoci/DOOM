@@ -141,6 +141,9 @@ ExtractFileBase
 int			reloadlump;
 char*			reloadname;
 
+// so if i understood correctly,
+// this just fills our lumpinfo
+// which contains positions of every lump
 
 void W_AddFile (char *filename)
 {
@@ -267,6 +270,10 @@ void W_AddFile (char *filename)
 }
 
 
+
+// this only gets done
+// if working with a custom WAD?
+// we can skip this for now i guess
 //
 // W_Reload
 // Flushes any of the reloadable lumps in memory
