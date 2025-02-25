@@ -7,7 +7,12 @@
 #include <sys/stat.h>
 #include <alloca.h>
 #include <stdio.h>
+#include <string.h>
 #define O_BINARY    0
+
+int W_CheckNumForName (char* name);
+
+
 
 int filelength (int handle) 
 { 
@@ -20,6 +25,22 @@ int filelength (int handle)
 
     return fileinfo.st_size;
 }
+
+typedef struct
+{
+    char	name[8];
+    int		handle;
+    int		position;
+    int		size;
+} lumpinfo_t;
+
+int numlumps;
+lumpinfo_t *lumpinfo;
+int startlump = 0;
+
+
+
+
 
 
 // this is how a WAD file begins
@@ -44,6 +65,8 @@ typedef struct
     char		name[8];
     
 } filelump_t;
+
+
 
 int main(void)
 {
@@ -70,16 +93,88 @@ int main(void)
     printf("Size of * numlumps: %d\n", sizeof(filelump_t) * header.numlumps);
     
     int length = filelength(handle);
+    numlumps = header.numlumps;
     int tablelength = header.numlumps * sizeof(filelump_t);
     fileinfo = malloc(tablelength);
     lseek(handle, header.infotableofs, SEEK_SET);
     read(handle, fileinfo, length);
+    int y = 0;
 
-    for (int i = 0; i < header.numlumps; i = i + sizeof(filelump_t)) {
+    // print the first 10 
+    for (int i = 0; i < 10; i++) {
         printf("name is: %s\n", fileinfo[i].name);
         printf("position is: %d\n", fileinfo[i].filepos);
         printf("size is: %d\n", fileinfo[i].size);
+        y = i;
     }
+    printf("Value of I is:%d\n", y);
+
+
+    // Fill in lumpinfo
+    lumpinfo = malloc (numlumps*sizeof(lumpinfo_t));
+
+    lumpinfo_t *lump_p;
+    lump_p = &lumpinfo[startlump];
+	
+    int storehandle = handle;
+	
+    // if i understood correctly,
+    // we only read the info table into memory
+    for (int i=startlump ; i<numlumps ; i++,lump_p++, fileinfo++)
+    {
+	lump_p->handle = storehandle;
+	lump_p->position = (fileinfo->filepos);
+	lump_p->size = (fileinfo->size);
+	strncpy (lump_p->name, fileinfo->name, 8);
+    }
+    
+    // should be 1 if working properly
+    printf("We found COLORMAP: %d\n", W_CheckNumForName("COLORMAP"));
 
     return 0;
+}
+
+
+
+int W_CheckNumForName (char* name)
+{
+    union {
+	char	s[9];
+	int	x[2];
+	
+    } name8;
+    
+    int		v1;
+    int		v2;
+    lumpinfo_t*	lump_p;
+
+    // make the name into two integers for easy compares
+    strncpy (name8.s,name,8);
+
+    // in case the name was a fill 8 chars
+    name8.s[8] = 0;
+
+
+
+    v1 = name8.x[0];
+    v2 = name8.x[1];
+
+
+    // scan backwards so patch lump files take precedence
+    lump_p = lumpinfo + numlumps;
+
+    while (lump_p-- != lumpinfo)
+    {
+	if ( *(int *)lump_p->name == v1
+	     && *(int *)&lump_p->name[4] == v2)
+	{
+        // because of pointer arithmetic
+        // this gives the number of elements
+        // not the number of bytes
+	    return lump_p - lumpinfo;
+	}
+    }
+
+    // TFB. Not found.
+    return -1;
 }

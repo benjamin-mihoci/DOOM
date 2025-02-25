@@ -427,6 +427,9 @@ int W_CheckNumForName (char* name)
 	if ( *(int *)lump_p->name == v1
 	     && *(int *)&lump_p->name[4] == v2)
 	{
+        // because of pointer arithmetic
+        // this gives the number of elements
+        // not the number of bytes
 	    return lump_p - lumpinfo;
 	}
     }
@@ -498,7 +501,7 @@ W_ReadLump
     }
     else
 	handle = l->handle;
-		
+	
     lseek (handle, l->position, SEEK_SET);
     c = read (handle, dest, l->size);
 
