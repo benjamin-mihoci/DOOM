@@ -271,7 +271,9 @@ Z_Malloc
     if (user)
     {
 	// mark as an in use block
-	base->user = user;			
+	base->user = user;		
+    // store the pointer to the memory allocated 
+    // into (lumpcache[lump]) in the case of W_CacheLumpNum
 	*(void **)user = (void *) ((byte *)base + sizeof(memblock_t));
     }
     else
@@ -440,7 +442,7 @@ Z_ChangeTag2
 	
     //remember, z_malloc returns a pointer to user memory
     //so we have to back up to the header
-    
+
     block = (memblock_t *) ( (byte *)ptr - sizeof(memblock_t));
 
     if (block->id != ZONEID)
