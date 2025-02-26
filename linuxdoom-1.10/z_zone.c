@@ -289,6 +289,8 @@ Z_Malloc
 	
     base->id = ZONEID;
     
+    //returns a POINTER TO USER MEMORY
+    //after the header
     return (void *) ((byte *)base + sizeof(memblock_t));
 }
 
@@ -436,6 +438,9 @@ Z_ChangeTag2
 {
     memblock_t*	block;
 	
+    //remember, z_malloc returns a pointer to user memory
+    //so we have to back up to the header
+    
     block = (memblock_t *) ( (byte *)ptr - sizeof(memblock_t));
 
     if (block->id != ZONEID)

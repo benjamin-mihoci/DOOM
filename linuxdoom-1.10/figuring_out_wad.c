@@ -130,7 +130,8 @@ int main(void)
     
     // should be 1 if working properly
     printf("We found COLORMAP: %d\n", W_CheckNumForName("COLORMAP"));
-
+    int lump = W_CheckNumForName("COLORMAP");
+    printf("SIZE OF THAT LUMP IS: %d\n", lumpinfo[lump].size);
     return 0;
 }
 
